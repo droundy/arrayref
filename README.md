@@ -24,3 +24,6 @@ that has the side effect of requiring a copy of the containing slice
 to be made, in the common case where the information was embedded in a
 larger `&[u8]`.
 
+For an example of how these macros can be used (albeit not a great
+example, as I haven't fully cleaned up this code), see
+[my rust translation of tweetnacl](https://github.com/droundy/onionsalt/blob/master/src/crypto.rs).
