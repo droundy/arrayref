@@ -23,13 +23,17 @@ extern crate quickcheck;
 /// or a Vec).  The arguments are a bit clumsy
 #[macro_export]
 macro_rules! array_ref {
-    ($arr:expr, $offset:expr, $t:ty, $len:expr) => {{
+    ($arr:expr, $offset:expr, $elemty:ty, $len:expr) => {{
         {
-            let sl = &$arr[$offset .. $offset + $len];
-            let arrref: &[$t; $len] = unsafe {
-                ::std::mem::transmute(sl.as_ptr())
-            };
-            arrref
+            #[inline]
+            unsafe fn as_array(slice: &[$elemty]) -> &[$elemty; $len] {
+                &*(slice.as_ptr() as *const [_; $len])
+            }
+            let a: usize = $offset;
+            let l: usize = $len;
+            unsafe {
+                as_array(&$arr[a..a.saturating_add(l)])
+            }
         }
     }}
 }
@@ -39,13 +43,17 @@ macro_rules! array_ref {
 /// or a slice, or a Vec).
 #[macro_export]
 macro_rules! array_mut_ref {
-    ($arr:expr, $offset:expr, $t:ty, $len:expr) => {{
+    ($arr:expr, $offset:expr, $elemty:ty, $len:expr) => {{
         {
-            let sl = &mut $arr[$offset .. $offset + $len];
-            let arrref: &mut [$t; $len] = unsafe {
-                ::std::mem::transmute(sl.as_ptr())
-            };
-            arrref
+            #[inline]
+            unsafe fn as_array(slice: &mut[$elemty]) -> &mut[$elemty; $len] {
+                &mut *(slice.as_mut_ptr() as *mut [_; $len])
+            }
+            let a: usize = $offset;
+            let l: usize = $len;
+            unsafe {
+                as_array(&mut $arr[a..a.saturating_add(l)])
+            }
         }
     }}
 }
@@ -61,12 +69,14 @@ fn checks_bounds() {
 #[test]
 fn simple_case_works() {
     let mut foo: [u8; 11] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    let bar = array_ref!(foo, 2, u8, 3);
-    println!("{}", bar.len());
     fn pr3(x: &[u8; 3]) {
         println!("[{} {} {}]", x[0], x[1], x[2]);
     }
-    pr3(bar);
+    {
+        let bar = array_ref!(foo, 2, u8, 3);
+        println!("{}", bar.len());
+        pr3(bar);
+    }
     pr3(array_ref!(foo, 0, u8, 3));
     fn zero2(x: &mut [u8; 2]) {
         x[0] = 0;
