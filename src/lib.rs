@@ -23,10 +23,10 @@ extern crate quickcheck;
 /// or a Vec).  The arguments are a bit clumsy
 #[macro_export]
 macro_rules! array_ref {
-    ($arr:expr, $offset:expr, $elemty:ty, $len:expr) => {{
+    ($arr:expr, $offset:expr, $len:expr) => {{
         {
             #[inline]
-            unsafe fn as_array(slice: &[$elemty]) -> &[$elemty; $len] {
+            unsafe fn as_array<T>(slice: &[T]) -> &[T; $len] {
                 &*(slice.as_ptr() as *const [_; $len])
             }
             let a: usize = $offset;
@@ -43,10 +43,10 @@ macro_rules! array_ref {
 /// or a slice, or a Vec).
 #[macro_export]
 macro_rules! array_mut_ref {
-    ($arr:expr, $offset:expr, $elemty:ty, $len:expr) => {{
+    ($arr:expr, $offset:expr, $len:expr) => {{
         {
             #[inline]
-            unsafe fn as_array(slice: &mut[$elemty]) -> &mut[$elemty; $len] {
+            unsafe fn as_array<T>(slice: &mut[T]) -> &mut[T; $len] {
                 &mut *(slice.as_mut_ptr() as *mut [_; $len])
             }
             let a: usize = $offset;
@@ -62,7 +62,7 @@ macro_rules! array_mut_ref {
 #[should_panic]
 fn checks_bounds() {
     let foo: [u8; 11] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    let bar = array_ref!(foo, 1, u8, 11);
+    let bar = array_ref!(foo, 1, 11);
     println!("{}", bar[0]);
 }
 
@@ -73,17 +73,17 @@ fn simple_case_works() {
         println!("[{} {} {}]", x[0], x[1], x[2]);
     }
     {
-        let bar = array_ref!(foo, 2, u8, 3);
+        let bar = array_ref!(foo, 2, 3);
         println!("{}", bar.len());
         pr3(bar);
     }
-    pr3(array_ref!(foo, 0, u8, 3));
+    pr3(array_ref!(foo, 0, 3));
     fn zero2(x: &mut [u8; 2]) {
         x[0] = 0;
         x[1] = 0;
     }
-    zero2(array_mut_ref!(foo, 8, u8, 2));
-    pr3(array_ref!(foo, 8, u8, 3));
+    zero2(array_mut_ref!(foo, 8, 2));
+    pr3(array_ref!(foo, 8, 3));
 }
 
 
@@ -93,7 +93,7 @@ fn check_array_ref_5() {
         if data.len() < offset + 5 {
             return quickcheck::TestResult::discard();
         }
-        let out = array_ref!(data, offset, u8, 5);
+        let out = array_ref!(data, offset, 5);
         quickcheck::TestResult::from_bool(out.len() == 5)
     }
     quickcheck::quickcheck(f as fn(Vec<u8>, usize) -> quickcheck::TestResult);
@@ -106,7 +106,7 @@ fn check_array_ref_out_of_bounds_5() {
             return quickcheck::TestResult::discard();
         }
         quickcheck::TestResult::must_fail(move || {
-            array_ref!(data, offset, u8, 5);
+            array_ref!(data, offset, 5);
         })
     }
     quickcheck::quickcheck(f as fn(Vec<u8>, usize) -> quickcheck::TestResult);
@@ -118,7 +118,7 @@ fn check_array_mut_ref_7() {
         if data.len() < offset + 7 {
             return quickcheck::TestResult::discard();
         }
-        let out = array_mut_ref!(data, offset, u8, 7);
+        let out = array_mut_ref!(data, offset, 7);
         out[6] = 3;
         quickcheck::TestResult::from_bool(out.len() == 7)
     }
@@ -133,7 +133,7 @@ fn check_array_mut_ref_out_of_bounds_32() {
             return quickcheck::TestResult::discard();
         }
         quickcheck::TestResult::must_fail(move || {
-            array_mut_ref!(data, offset, u8, 32);
+            array_mut_ref!(data, offset, 32);
         })
     }
     quickcheck::quickcheck(f as fn(Vec<u8>, usize) -> quickcheck::TestResult);
