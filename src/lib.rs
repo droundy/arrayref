@@ -46,8 +46,7 @@ macro_rules! array_refs {
         {
             #[inline]
             #[allow(unused_assignments)]
-            unsafe fn as_arrays<T>(a: &[T; $( $len + )* 0 ]
-                                   ) -> ( $( &[T; $len], )* ) {
+            unsafe fn as_arrays<T>(a: &[T; $( $len + )* 0 ]) -> ( $( &[T; $len], )* ) {
                 let mut p = a.as_ptr() as *const T;
                 ( $( {
                     let aref = &*(p as *const [T; $len]);
@@ -74,8 +73,7 @@ macro_rules! mut_array_refs {
         {
             #[inline]
             #[allow(unused_assignments)]
-            unsafe fn as_arrays<T>(a: &mut[T; $( $len + )* 0 ]
-                                   ) -> ( $( &mut[T; $len], )* ) {
+            unsafe fn as_arrays<T>(a: &mut[T; $( $len + )* 0 ]) -> ( $( &mut[T; $len], )* ) {
                 let mut p = a.as_ptr() as *mut T;
                 ( $( {
                     let aref = &mut *(p as *mut [T; $len]);
