@@ -113,27 +113,28 @@ macro_rules! array_mut_ref {
 fn checks_bounds() {
     let foo: [u8; 11] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     let bar = array_ref!(foo, 1, 11);
-    println!("{}", bar[0]);
+    bar[0];
 }
 
 #[test]
 fn simple_case_works() {
-    let mut foo: [u8; 11] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    fn pr3(x: &[u8; 3]) {
-        println!("[{} {} {}]", x[0], x[1], x[2]);
+    fn check(expected: [u8; 3], actual: &[u8; 3]) {
+        for (e, a) in (&expected).iter().zip(actual.iter()) {
+            assert_eq!(e, a)
+        }
     }
+    let mut foo: [u8; 11] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     {
         let bar = array_ref!(foo, 2, 3);
-        println!("{}", bar.len());
-        pr3(bar);
+        check([2, 3, 4], bar);
     }
-    pr3(array_ref!(foo, 0, 3));
+    check([0, 1, 2], array_ref!(foo, 0, 3));
     fn zero2(x: &mut [u8; 2]) {
         x[0] = 0;
         x[1] = 0;
     }
     zero2(array_mut_ref!(foo, 8, 2));
-    pr3(array_ref!(foo, 8, 3));
+    check([0, 0, 10], array_ref!(foo, 8, 3));
 }
 
 
