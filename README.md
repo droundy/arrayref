@@ -1,14 +1,15 @@
 # arrayref
 
-This is a very small rust module, which contains just two macros, for
+[![Build Status](https://travis-ci.org/droundy/arrayref.svg?branch=master)](https://travis-ci.org/droundy/arrayref)
+
+This is a very small rust module, which contains just four macros, for
 the taking of array references to slices of... sliceable things.
-These two macros (which are awkwardly named) should be perfectly safe,
-but this is my first time writing unsafe code, so I will **greatly**
-appreciate any code review.
+These macros (which are awkwardly named) should be perfectly safe, and
+have seen just a tad of code review.
 
 If you are considering providing code review, but think it might be
-too time-consuming, please consider that this is only 21 lines of
-actual code, although I have another 80 or so lines of test code.
+too time-consuming, please consider that this is only a few lines of
+actual code, although I have considerably more test code.
 
 The basic idea is that when we know at compile time the size of a
 slice we want, we should be able to take an array reference instead of
