@@ -31,7 +31,8 @@ macro_rules! array_ref {
             unsafe fn as_array<T>(slice: &[T]) -> &[T; $len] {
                 &*(slice.as_ptr() as *const [_; $len])
             }
-            let slice = & $arr[$offset..$offset + $len];
+            let offset = $offset;
+            let slice = & $arr[offset..offset + $len];
             unsafe {
                 as_array(slice)
             }
@@ -104,7 +105,8 @@ macro_rules! array_mut_ref {
             unsafe fn as_array<T>(slice: &mut [T]) -> &mut [T; $len] {
                 &mut *(slice.as_mut_ptr() as *mut [_; $len])
             }
-            let slice = &mut $arr[$offset..$offset + $len];
+            let offset = $offset;
+            let slice = &mut $arr[offset..offset + $len];
             unsafe {
                 as_array(slice)
             }
