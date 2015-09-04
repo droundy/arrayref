@@ -21,6 +21,8 @@ extern crate quickcheck;
 /// You can use `array_ref` to generate an array reference to a subset
 /// of a sliceable bit of data (which could be an array, or a slice,
 /// or a Vec).
+///
+/// **Panics** if the slice is out of bounds.
 #[macro_export]
 macro_rules! array_ref {
     ($arr:expr, $offset:expr, $len:expr) => {{
@@ -29,7 +31,7 @@ macro_rules! array_ref {
             unsafe fn as_array<T>(slice: &[T]) -> &[T; $len] {
                 &*(slice.as_ptr() as *const [_; $len])
             }
-            let slice = & $arr[$offset..$offset+$len];
+            let slice = & $arr[$offset..$offset + $len];
             unsafe {
                 as_array(slice)
             }
@@ -47,7 +49,7 @@ macro_rules! array_refs {
             #[inline]
             #[allow(unused_assignments)]
             unsafe fn as_arrays<T>(a: &[T; $( $len + )* 0 ]) -> ( $( &[T; $len], )* ) {
-                let mut p = a.as_ptr() as *const T;
+                let mut p = a.as_ptr();
                 ( $( {
                     let aref = &*(p as *const [T; $len]);
                     p = p.offset($len);
@@ -73,8 +75,8 @@ macro_rules! mut_array_refs {
         {
             #[inline]
             #[allow(unused_assignments)]
-            unsafe fn as_arrays<T>(a: &mut[T; $( $len + )* 0 ]) -> ( $( &mut[T; $len], )* ) {
-                let mut p = a.as_ptr() as *mut T;
+            unsafe fn as_arrays<T>(a: &mut [T; $( $len + )* 0 ]) -> ( $( &mut [T; $len], )* ) {
+                let mut p = a.as_mut_ptr();
                 ( $( {
                     let aref = &mut *(p as *mut [T; $len]);
                     p = p.offset($len);
@@ -92,15 +94,17 @@ macro_rules! mut_array_refs {
 /// You can use `array_mut_ref` to generate a mutable array reference
 /// to a subset of a sliceable bit of data (which could be an array,
 /// or a slice, or a Vec).
+///
+/// **Panics** if the slice is out of bounds.
 #[macro_export]
 macro_rules! array_mut_ref {
     ($arr:expr, $offset:expr, $len:expr) => {{
         {
             #[inline]
-            unsafe fn as_array<T>(slice: &mut[T]) -> &mut[T; $len] {
+            unsafe fn as_array<T>(slice: &mut [T]) -> &mut [T; $len] {
                 &mut *(slice.as_mut_ptr() as *mut [_; $len])
             }
-            let slice = &mut $arr[$offset..$offset+$len];
+            let slice = &mut $arr[$offset..$offset + $len];
             unsafe {
                 as_array(slice)
             }
