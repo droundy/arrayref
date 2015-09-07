@@ -1,6 +1,7 @@
 # arrayref
 
 [![Build Status](https://travis-ci.org/droundy/arrayref.svg?branch=master)](https://travis-ci.org/droundy/arrayref)
+[![Coverage Status](https://coveralls.io/repos/droundy/arrayref/badge.svg?branch=master&service=github)](https://coveralls.io/github/droundy/arrayref?branch=master)
 
 [Documentation](https://droundy.github.io/arrayref)
 
