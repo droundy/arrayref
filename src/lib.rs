@@ -119,7 +119,7 @@ macro_rules! array_mut_ref {
 fn checks_bounds() {
     let foo: [u8; 11] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     let bar = array_ref!(foo, 1, 11);
-    bar[0];
+    println!("I am checking that I can dereference bar[0] = {}", bar[0]);
 }
 
 #[test]
