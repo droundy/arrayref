@@ -1,10 +1,11 @@
 [package]
 name = "arrayref"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["David Roundy <roundyd@physics.oregonstate.edu>"]
 description = "Macros to take array references of slices"
 license = "BSD-2-Clause"
 repository = "https://github.com/droundy/arrayref"
+documentation = "https://droundy.github.io/arrayref"
 
 [dev-dependencies]
 quickcheck = "*"

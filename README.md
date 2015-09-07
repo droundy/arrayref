@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/droundy/arrayref.svg?branch=master)](https://travis-ci.org/droundy/arrayref)
 
+[Documentation](https://droundy.github.io/arrayref)
+
 This is a very small rust module, which contains just four macros, for
 the taking of array references to slices of... sliceable things.
 These macros (which are awkwardly named) should be perfectly safe, and
