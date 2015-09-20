@@ -45,11 +45,6 @@ macro_rules! array_ref {
 /// me ensure that my sub-arrays add up to the entire array.  This
 /// macro will *never* panic, since the sizes are all checked at
 /// compile time.
-///
-/// I believe there are some interesting and exciting bugs that show
-/// up when you use lengths that are constants rather than numeric
-/// literals.  This should be fixable, but it will all be nicer when I
-/// can create actual doc tests.
 #[macro_export]
 macro_rules! array_refs {
     ( $arr:expr, $( $len:expr ),* ) => {{
@@ -60,7 +55,7 @@ macro_rules! array_refs {
                 let mut p = a.as_ptr();
                 ( $( {
                     let aref = &*(p as *const [T; $len]);
-                    p = p.offset($len);
+                    p = p.offset($len as isize);
                     aref
                 } ),* )
             }
@@ -81,11 +76,6 @@ macro_rules! array_refs {
 /// This is intentional, as I find it handy to make me ensure that my
 /// sub-arrays add up to the entire array.  This macro will *never*
 /// panic, since the sizes are all checked at compile time.
-///
-/// I believe there are some interesting and exciting bugs that show
-/// up when you use lengths that are constants rather than numeric
-/// literals.  This should be fixable, but it will all be nicer when I
-/// can create actual doc tests.
 #[macro_export]
 macro_rules! mut_array_refs {
     ( $arr:expr, $( $len:expr ),* ) => {{
@@ -96,7 +86,7 @@ macro_rules! mut_array_refs {
                 let mut p = a.as_mut_ptr();
                 ( $( {
                     let aref = &mut *(p as *mut [T; $len]);
-                    p = p.offset($len);
+                    p = p.offset($len as isize);
                     aref
                 } ),* )
             }
