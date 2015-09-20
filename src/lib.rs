@@ -1,5 +1,6 @@
-//! This package contains just two macros, for the taking of array
-//! references to slices of anything that can be sliced.
+//! This package contains just four macros, which enable the creation
+//! of array references to portions of arrays or slices (or things
+//! that can be sliced).
 //!
 //! # Examples
 //!
@@ -8,11 +9,6 @@
 //!
 //! I would give a real example here, but I can't figure out how to
 //! make my doctest actually load the macros...
-//!
-//! let mut foobar = [0; 512];
-//! let bar = array_ref!(foobar, 0, u16, 8); // first 8 elements
-//!
-
 #![deny(warnings)]
 
 #[cfg(test)]
@@ -23,6 +19,7 @@ extern crate quickcheck;
 /// or a Vec).
 ///
 /// **Panics** if the slice is out of bounds.
+
 #[macro_export]
 macro_rules! array_ref {
     ($arr:expr, $offset:expr, $len:expr) => {{
@@ -43,6 +40,16 @@ macro_rules! array_ref {
 /// You can use `array_refs` to generate a series of array references
 /// to an input array reference.  The idea is if you want to break an
 /// array into a series of contiguous and non-overlapping arrays.
+/// `array_refs` is a bit funny in that it insists on slicing up the
+/// *entire* array.  This is intentional, as I find it handy to make
+/// me ensure that my sub-arrays add up to the entire array.  This
+/// macro will *never* panic, since the sizes are all checked at
+/// compile time.
+///
+/// I believe there are some interesting and exciting bugs that show
+/// up when you use lengths that are constants rather than numeric
+/// literals.  This should be fixable, but it will all be nicer when I
+/// can create actual doc tests.
 #[macro_export]
 macro_rules! array_refs {
     ( $arr:expr, $( $len:expr ),* ) => {{
@@ -69,7 +76,16 @@ macro_rules! array_refs {
 /// You can use `mut_array_refs` to generate a series of mutable array
 /// references to an input mutable array reference.  The idea is if
 /// you want to break an array into a series of contiguous and
-/// non-overlapping arrays.
+/// non-overlapping arrays.  Like `array_refs!`, `mut_array_refs!` is
+/// a bit funny in that it insists on slicing up the *entire* array.
+/// This is intentional, as I find it handy to make me ensure that my
+/// sub-arrays add up to the entire array.  This macro will *never*
+/// panic, since the sizes are all checked at compile time.
+///
+/// I believe there are some interesting and exciting bugs that show
+/// up when you use lengths that are constants rather than numeric
+/// literals.  This should be fixable, but it will all be nicer when I
+/// can create actual doc tests.
 #[macro_export]
 macro_rules! mut_array_refs {
     ( $arr:expr, $( $len:expr ),* ) => {{
