@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `mut_array_refs!` macro in crate `arrayref`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, mut_array_refs!">
+
+    <title>arrayref::mut_array_refs! - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='index.html'>arrayref</a></p><script>window.sidebarCurrent = {name: 'mut_array_refs!', ty: 'macro', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content macro">
+<h1 class='fqn'><span class='in-band'><a href='index.html'>arrayref</a>::<wbr><a class='macro' href=''>mut_array_refs!</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-6' class='srclink' href='../src/arrayref/lib.rs.html#165-184' title='goto source code'>[src]</a></span></h1>
+<pre class='rust macro'>
+<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>mut_array_refs</span> {
+    ( <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>:<span class='ident'>expr</span>, $( <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>len</span>:<span class='ident'>expr</span> ),<span class='op'>*</span> ) <span class='op'>=&gt;</span> {{
+        {
+            <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+            <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>unused_assignments</span>)]</span>
+            <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>as_arrays</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>(<span class='ident'>a</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>; $( <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>len</span> <span class='op'>+</span> )<span class='op'>*</span> <span class='number'>0</span> ]) <span class='op'>-&gt;</span> ( $( <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>; <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>len</span>], )<span class='op'>*</span> ) {
+                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>p</span> <span class='op'>=</span> <span class='ident'>a</span>.<span class='ident'>as_mut_ptr</span>();
+                ( $( {
+                    <span class='kw'>let</span> <span class='ident'>aref</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='op'>*</span>(<span class='ident'>p</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>; <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>len</span>]);
+                    <span class='ident'>p</span> <span class='op'>=</span> <span class='ident'>p</span>.<span class='ident'>offset</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>len</span> <span class='kw'>as</span> <span class='ident'>isize</span>);
+                    <span class='ident'>aref</span>
+                } ),<span class='op'>*</span> )
+            }
+            <span class='kw'>let</span> <span class='ident'>input</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>;
+            <span class='kw'>unsafe</span> {
+                <span class='ident'>as_arrays</span>(<span class='ident'>input</span>)
+            }
+        }
+    }}
+}</pre>
+<div class='docblock'><p>You can use <code>mut_array_refs</code> to generate a series of mutable array
+references to an input mutable array reference.  The idea is if
+you want to break an array into a series of contiguous and
+non-overlapping mutable array references.  Like <code>array_refs!</code>,
+<code>mut_array_refs!</code> is a bit funny in that it insists on slicing up
+the <em>entire</em> array.  This is intentional, as I find it handy to
+make me ensure that my sub-arrays add up to the entire array.
+This macro will <em>never</em> panic, since the sizes are all checked at
+compile time.</p>
+
+<p>Note that unlike <code>array_mut_ref!</code>, <code>mut_array_refs</code> <em>requires</em>
+that the first argument be a mutable array reference.  The
+following arguments are the lengths of each subarray you wish a
+reference to.  The total of these arguments <em>must</em> equal the size
+of the array itself.  Also note that this macro allows you to take
+out multiple mutable references to a single object, which is both
+weird and powerful.</p>
+<pre class='rust rust-example-rendered'>
+<span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>arrayref</span>;
+
+<span class='kw'>fn</span> <span class='ident'>write_u16</span>(<span class='ident'>bytes</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>u8</span>; <span class='number'>2</span>], <span class='ident'>num</span>: <span class='ident'>u16</span>) {
+     <span class='ident'>bytes</span>[<span class='number'>0</span>] <span class='op'>=</span> <span class='ident'>num</span> <span class='kw'>as</span> <span class='ident'>u8</span>;
+     <span class='ident'>bytes</span>[<span class='number'>1</span>] <span class='op'>=</span> (<span class='ident'>num</span> <span class='op'>&gt;&gt;</span> <span class='number'>8</span>) <span class='kw'>as</span> <span class='ident'>u8</span>;
+}
+<span class='kw'>fn</span> <span class='ident'>write_u32</span>(<span class='ident'>bytes</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>u8</span>; <span class='number'>4</span>], <span class='ident'>num</span>: <span class='ident'>u32</span>) {
+     <span class='ident'>bytes</span>[<span class='number'>0</span>] <span class='op'>=</span> <span class='ident'>num</span> <span class='kw'>as</span> <span class='ident'>u8</span>;
+     <span class='ident'>bytes</span>[<span class='number'>1</span>] <span class='op'>=</span> (<span class='ident'>num</span> <span class='op'>&gt;&gt;</span> <span class='number'>8</span>) <span class='kw'>as</span> <span class='ident'>u8</span>; <span class='comment'>// this is buggy to save space...</span>
+}
+<span class='comment'>// ...</span>
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>data</span> <span class='op'>=</span> [<span class='number'>0</span>,<span class='number'>1</span>,<span class='number'>2</span>,<span class='number'>3</span>,<span class='number'>4</span>,<span class='number'>0</span>,<span class='number'>6</span>,<span class='number'>7</span>];
+<span class='kw'>let</span> (<span class='ident'>a</span>,<span class='ident'>b</span>,<span class='ident'>c</span>) <span class='op'>=</span> <span class='macro'>mut_array_refs</span><span class='macro'>!</span>[<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>data</span>,<span class='number'>2</span>,<span class='number'>2</span>,<span class='number'>4</span>];
+<span class='comment'>// let&#39;s write out some nice prime numbers!</span>
+<span class='ident'>write_u16</span>(<span class='ident'>a</span>, <span class='number'>37</span>);
+<span class='ident'>write_u16</span>(<span class='ident'>b</span>, <span class='number'>73</span>);
+<span class='ident'>write_u32</span>(<span class='ident'>c</span>, <span class='number'>137</span>); <span class='comment'>// approximate inverse of the fine structure constant!</span></pre>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div>
+            <div class="shortcuts">
+                <h1>Keyboard Shortcuts</h1>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h1>Search Tricks</h1>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>typedef</code> (or
+                    <code>tdef</code>).
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "arrayref";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script async src="../search-index.js"></script>
+</body>
+</html>
