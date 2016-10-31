@@ -27,9 +27,6 @@
 //! ```
 #![deny(warnings)]
 
-#[cfg(test)]
-extern crate quickcheck;
-
 /// You can use `array_ref` to generate an array reference to a subset
 /// of a sliceable bit of data (which could be an array, or a slice,
 /// or a Vec).
@@ -224,6 +221,14 @@ macro_rules! array_mut_ref {
     }}
 }
 
+
+#[cfg(test)]
+mod test {
+
+extern crate quickcheck;
+
+// use super::*;
+
 #[test]
 #[should_panic]
 fn checks_bounds() {
@@ -349,3 +354,5 @@ fn test_5_mut_xarray_refs() {
     assert_eq!(&[3;3], array_ref![data, 15, 3]);
     assert_eq!(&[10;10], array_ref![data, 118, 10]);
 }
+
+} // mod test
