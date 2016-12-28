@@ -18,8 +18,10 @@ parameters must have a given size.  As an example, consider the
 `byteorder` crate.  This is a very nice crate with a simple API
 containing functions that look like:
 
-    fn read_u16(buf: &[u8]) -> u16;
-    fn write_u16(buf: &mut [u8], n: u16);
+```rust
+fn read_u16(buf: &[u8]) -> u16;
+fn write_u16(buf: &mut [u8], n: u16);
+```
 
 Looking at this, you might wonder why they accept a slice reference as
 input.  After all, they always one just two bytes.  These functions
@@ -29,8 +31,10 @@ may be statically known that the input is the right size.
 
 Wouldn't it be nicer if we had functions more like
 
-    fn read_u16_array(buf: &[u8; 2]) -> u16;
-    fn write_u16_array(buf: &mut [u8; 2], n: u16);
+```rust
+fn read_u16_array(buf: &[u8; 2]) -> u16;
+fn write_u16_array(buf: &mut [u8; 2], n: u16);
+```
 
 The type signature would tell users precisely what size of input is
 required, and the compiler could check at compile time that the input
@@ -43,17 +47,19 @@ that we are working with a hypothetical (and simplified) ipv6 address.
 Doing this with our array version (which looks so beautiful in terms
 of accurately describing what we want!) looks terrible:
 
-    let addr: &[u8; 16] = ...;
-    let mut segments = [0u16; 8];
-    // array-based API
-    for i in 0 .. 8 {
-        let mut two_bytes = [addr[2*i], addr[2*i+1]];
-        segments[i] = read_u16_array(&two_bytes);
-    }
-    // slice-based API
-    for i in 0 .. 8 {
-        segments[i] = read_u16(&addr[2*i..]);
-    }
+```rust
+let addr: &[u8; 16] = ...;
+let mut segments = [0u16; 8];
+// array-based API
+for i in 0 .. 8 {
+    let mut two_bytes = [addr[2*i], addr[2*i+1]];
+    segments[i] = read_u16_array(&two_bytes);
+}
+// slice-based API
+for i in 0 .. 8 {
+    segments[i] = read_u16(&addr[2*i..]);
+}
+```
 
 The array-based approach looks way worse.  We need to create a fresh
 copy of the bytes, just so it will be in an array of the proper size!
@@ -70,12 +76,14 @@ The arrayref crate allows you to do this kind of slicing.  So the
 above (very contrived) example can be implemented with array
 references as:
 
-    let addr: &[u8; 16] = ...;
-    let mut segments = [0u16; 8];
-    // array-based API with arrayref
-    for i in 0 .. 8 {
-        segments[i] = read_u16_array(array_ref![addr,2*i,2]);
-    }
+```rust
+let addr: &[u8; 16] = ...;
+let mut segments = [0u16; 8];
+// array-based API with arrayref
+for i in 0 .. 8 {
+    segments[i] = read_u16_array(array_ref![addr,2*i,2]);
+}
+```
 
 Here the `array_ref![addr,2*i,2]` macro allows us to take an array
 reference to a slice consisting of two bytes starting at `2*i`.  Apart
