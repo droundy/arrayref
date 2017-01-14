@@ -26,6 +26,11 @@
 //! # }
 //! ```
 #![deny(warnings)]
+#![no_std]
+
+#[cfg(test)]
+#[macro_use]
+extern crate std;
 
 /// You can use `array_ref` to generate an array reference to a subset
 /// of a sliceable bit of data (which could be an array, or a slice,
@@ -226,6 +231,8 @@ macro_rules! array_mut_ref {
 mod test {
 
 extern crate quickcheck;
+
+use std::vec::Vec;
 
 // use super::*;
 
