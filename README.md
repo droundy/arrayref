@@ -24,7 +24,7 @@ fn write_u16(buf: &mut [u8], n: u16);
 ```
 
 Looking at this, you might wonder why they accept a slice reference as
-input.  After all, they always one just two bytes.  These functions
+input.  After all, they always want just two bytes.  These functions
 must panic if given a slice that is too small, which means that unless
 they are inlined, then a runtime bounds-check is forced, even if it
 may be statically known that the input is the right size.
