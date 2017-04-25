@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/droundy/arrayref.svg?branch=master)](https://travis-ci.org/droundy/arrayref)
 [![Coverage Status](https://coveralls.io/repos/droundy/arrayref/badge.svg?branch=master&service=github)](https://coveralls.io/github/droundy/arrayref?branch=master)
 
-[Documentation](https://docs.rs/arrayref/0.3.3/arrayref)
+[Documentation](https://docs.rs/arrayref)
 
 This is a very small rust module, which contains just four macros, for
 the taking of array references to slices of... sliceable things.
