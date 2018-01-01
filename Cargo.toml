@@ -8,4 +8,4 @@ repository = "https://github.com/droundy/arrayref"
 documentation = "https://docs.rs/arrayref"
 
 [dev-dependencies]
-quickcheck = "0.5"
+quickcheck = "0.6"
