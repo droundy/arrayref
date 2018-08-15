@@ -63,6 +63,7 @@ macro_rules! array_ref {
             }
             let offset = $offset;
             let slice = & $arr[offset..offset + $len];
+            #[allow(unused_unsafe)]
             unsafe {
                 as_array(slice)
             }
@@ -127,6 +128,7 @@ macro_rules! array_refs {
                 } ),*)
             }
             let input = $arr;
+            #[allow(unused_unsafe)]
             unsafe {
                 as_arrays(input)
             }
@@ -145,6 +147,7 @@ macro_rules! array_refs {
                 } ),* )
             }
             let input = $arr;
+            #[allow(unused_unsafe)]
             unsafe {
                 as_arrays(input)
             }
@@ -220,6 +223,7 @@ macro_rules! mut_array_refs {
                 } ),*)
             }
             let input = $arr;
+            #[allow(unused_unsafe)]
             unsafe {
                 as_arrays(input)
             }
@@ -238,6 +242,7 @@ macro_rules! mut_array_refs {
                 } ),* )
             }
             let input = $arr;
+            #[allow(unused_unsafe)]
             unsafe {
                 as_arrays(input)
             }
@@ -279,6 +284,7 @@ macro_rules! array_mut_ref {
             }
             let offset = $offset;
             let slice = &mut $arr[offset..offset + $len];
+            #[allow(unused_unsafe)]
             unsafe {
                 as_array(slice)
             }
