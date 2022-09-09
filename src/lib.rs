@@ -105,7 +105,7 @@ macro_rules! array_ref {
 macro_rules! array_refs {
     ( $arr:expr, $( $pre:expr ),* ; .. ;  $( $post:expr ),* ) => {{
         {
-            use std::slice;
+            use core::slice;
             #[inline]
             #[allow(unused_assignments)]
             #[allow(clippy::eval_order_dependence)]
@@ -202,7 +202,7 @@ macro_rules! array_refs {
 macro_rules! mut_array_refs {
     ( $arr:expr, $( $pre:expr ),* ; .. ;  $( $post:expr ),* ) => {{
         {
-            use std::slice;
+            use core::slice;
             #[inline]
             #[allow(unused_assignments)]
             #[allow(clippy::eval_order_dependence)]
