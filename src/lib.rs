@@ -118,7 +118,7 @@ macro_rules! array_refs {
                     let aref = & *(p as *const [T; $pre]);
                     p = p.add($pre);
                     aref
-                } ),* , {
+                }, )* {
                     let sl = slice::from_raw_parts(p as *const T, var_len);
                     p = p.add(var_len);
                     sl
@@ -126,7 +126,7 @@ macro_rules! array_refs {
                     let aref = & *(p as *const [T; $post]);
                     p = p.add($post);
                     aref
-                } ),*)
+                }, )*)
             }
             let input = $arr;
             #[allow(unused_unsafe)]
@@ -146,7 +146,7 @@ macro_rules! array_refs {
                     let aref = &*(p as *const [T; $len]);
                     p = p.offset($len as isize);
                     aref
-                } ),* )
+                }, )* )
             }
             let input = $arr;
             #[allow(unused_unsafe)]
@@ -215,7 +215,7 @@ macro_rules! mut_array_refs {
                     let aref = &mut *(p as *mut [T; $pre]);
                     p = p.add($pre);
                     aref
-                } ),* , {
+                }, )* {
                     let sl = slice::from_raw_parts_mut(p as *mut T, var_len);
                     p = p.add(var_len);
                     sl
@@ -223,7 +223,7 @@ macro_rules! mut_array_refs {
                     let aref = &mut *(p as *mut [T; $post]);
                     p = p.add($post);
                     aref
-                } ),*)
+                }, )*)
             }
             let input = $arr;
             #[allow(unused_unsafe)]
@@ -243,7 +243,7 @@ macro_rules! mut_array_refs {
                     let aref = &mut *(p as *mut [T; $len]);
                     p = p.add($len);
                     aref
-                } ),* )
+                }, )* )
             }
             let input = $arr;
             #[allow(unused_unsafe)]
@@ -480,6 +480,22 @@ fn forbidden_clippy_lints_do_not_fire() {
     let mut data = [0u8; 32];
     let _ = array_refs![&data, 8; .. ;];
     let _ = mut_array_refs![&mut data, 8; .. ; 10];
+}
+
+#[test]
+fn single_arg_refs() {
+    let mut data = [0u8; 8];
+    let (_, ) = array_refs![&data, 8];
+    let (_, ) = mut_array_refs![&mut data, 8];
+
+    let (_, _) = array_refs![&data, 4; ..;];
+    let (_, _) = mut_array_refs![&mut data, 4; ..;];
+
+    let (_, _) = array_refs![&data,; ..; 4];
+    let (_, _) = mut_array_refs![&mut data,; ..; 4];
+
+    let (_,) = array_refs![&data,; ..;];
+    let (_,) = mut_array_refs![&mut data,; ..;];
 }
 
 } // mod test
