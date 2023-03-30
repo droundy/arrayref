@@ -6,6 +6,7 @@ description = "Macros to take array references of slices"
 license = "BSD-2-Clause"
 repository = "https://github.com/droundy/arrayref"
 documentation = "https://docs.rs/arrayref"
+edition = "2021"
 
 [dev-dependencies]
 quickcheck = "0.6"

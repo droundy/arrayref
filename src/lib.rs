@@ -58,17 +58,16 @@ macro_rules! array_ref {
     ($arr:expr, $offset:expr, $len:expr) => {{
         {
             #[inline]
-            unsafe fn as_array<T>(slice: &[T]) -> &[T; $len] {
-                &*(slice.as_ptr() as *const [_; $len])
+            fn as_array<T>(slice: &[T]) -> &[T; $len] {
+                slice
+                    .try_into()
+                    .expect("array ref len and offset should be valid for provided array")
             }
             let offset = $offset;
-            let slice = & $arr[offset..offset + $len];
-            #[allow(unused_unsafe)]
-            unsafe {
-                as_array(slice)
-            }
+            let slice = &$arr[offset..offset + $len];
+            as_array(slice)
         }
-    }}
+    }};
 }
 
 /// You can use `array_refs` to generate a series of array references
