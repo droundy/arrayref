@@ -62,7 +62,7 @@ macro_rules! array_ref {
                 &*(slice.as_ptr() as *const [_; $len])
             }
             let offset = $offset;
-            let slice = & $arr[offset..offset + $len];
+            let slice = & $arr[offset..][..$len];
             #[allow(unused_unsafe)]
             unsafe {
                 as_array(slice)
@@ -287,7 +287,7 @@ macro_rules! array_mut_ref {
                 &mut *(slice.as_mut_ptr() as *mut [_; $len])
             }
             let offset = $offset;
-            let slice = &mut $arr[offset..offset + $len];
+            let slice = &mut $arr[offset..][..$len];
             #[allow(unused_unsafe)]
             unsafe {
                 as_array(slice)
