@@ -105,29 +105,13 @@ macro_rules! array_ref {
 macro_rules! array_refs {
     ( $arr:expr, $( $pre:expr ),* ; .. ;  $( $post:expr ),* ) => {{
         {
-            /// A hokey struct to avoid theoretical overflow, which is only used
-            /// at compile time, so efficiency of the overflow checks are not of
-            /// concern.
-            struct SaturatingUsize(usize);
-            impl SaturatingUsize {
-                // It is only used at compile time, so gets incorrectly
-                // triggered as "dead code".
-                #[allow(dead_code)]
-                const fn add(self, rhs: usize) -> Self {
-                    if let Some(v) = self.0.checked_add(rhs) {
-                        SaturatingUsize(v)
-                    } else {
-                        SaturatingUsize(usize::MAX)
-                    }
-                }
-            }
-
             use core::slice;
             #[inline]
             #[allow(unused_assignments)]
             #[allow(clippy::eval_order_dependence)]
             unsafe fn as_arrays<T>(a: &[T]) -> ( $( &[T; $pre], )* &[T],  $( &[T; $post], )*) {
-                const MIN_LEN: usize = SaturatingUsize(0) $( .add($pre) )* $( .add($post) )* .0;
+                const MIN_LEN: usize = 0usize $( .saturating_add($pre) )* $( .saturating_add($post) )*;
+                assert!(MIN_LEN < usize::MAX, "Your arrays are too big, are you trying to hack yourself?!");
                 let var_len = a.len() - MIN_LEN;
                 assert!(a.len() >= MIN_LEN);
                 let mut p = a.as_ptr();
@@ -218,29 +202,13 @@ macro_rules! array_refs {
 macro_rules! mut_array_refs {
     ( $arr:expr, $( $pre:expr ),* ; .. ;  $( $post:expr ),* ) => {{
         {
-            /// A hokey struct to avoid theoretical overflow, which is only used
-            /// at compile time, so efficiency of the overflow checks are not of
-            /// concern.
-            struct SaturatingUsize(usize);
-            impl SaturatingUsize {
-                // It is only used at compile time, so gets incorrectly
-                // triggered as "dead code".
-                #[allow(dead_code)]
-                const fn add(self, rhs: usize) -> Self {
-                    if let Some(v) = self.0.checked_add(rhs) {
-                        SaturatingUsize(v)
-                    } else {
-                        SaturatingUsize(usize::MAX)
-                    }
-                }
-            }
-
             use core::slice;
             #[inline]
             #[allow(unused_assignments)]
             #[allow(clippy::eval_order_dependence)]
             unsafe fn as_arrays<T>(a: &mut [T]) -> ( $( &mut [T; $pre], )* &mut [T],  $( &mut [T; $post], )*) {
-                const MIN_LEN: usize = SaturatingUsize(0) $( .add($pre) )* $( .add($post) )* .0;
+                const MIN_LEN: usize = 0usize $( .saturating_add($pre) )* $( .saturating_add($post) )*;
+                assert!(MIN_LEN < usize::MAX, "Your arrays are too big, are you trying to hack yourself?!");
                 let var_len = a.len() - MIN_LEN;
                 assert!(a.len() >= MIN_LEN);
                 let mut p = a.as_mut_ptr();
