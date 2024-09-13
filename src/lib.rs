@@ -58,7 +58,7 @@ macro_rules! array_ref {
     ($arr:expr, $offset:expr, $len:expr) => {{
         {
             #[inline]
-            unsafe fn as_array<T>(slice: &[T]) -> &[T; $len] {
+            const unsafe fn as_array<T>(slice: &[T]) -> &[T; $len] {
                 &*(slice.as_ptr() as *const [_; $len])
             }
             let offset = $offset;
@@ -109,7 +109,7 @@ macro_rules! array_refs {
             #[inline]
             #[allow(unused_assignments)]
             #[allow(clippy::eval_order_dependence)]
-            unsafe fn as_arrays<T>(a: &[T]) -> ( $( &[T; $pre], )* &[T],  $( &[T; $post], )*) {
+            const unsafe fn as_arrays<T>(a: &[T]) -> ( $( &[T; $pre], )* &[T],  $( &[T; $post], )*) {
                 const MIN_LEN: usize = 0usize $( .saturating_add($pre) )* $( .saturating_add($post) )*;
                 assert!(MIN_LEN < usize::MAX, "Your arrays are too big, are you trying to hack yourself?!");
                 let var_len = a.len() - MIN_LEN;
@@ -141,7 +141,7 @@ macro_rules! array_refs {
             #[inline]
             #[allow(unused_assignments)]
             #[allow(clippy::eval_order_dependence)]
-            unsafe fn as_arrays<T>(a: &[T; $( $len + )* 0 ]) -> ( $( &[T; $len], )* ) {
+            const unsafe fn as_arrays<T>(a: &[T; $( $len + )* 0 ]) -> ( $( &[T; $len], )* ) {
                 let mut p = a.as_ptr();
                 ( $( {
                     let aref = &*(p as *const [T; $len]);
