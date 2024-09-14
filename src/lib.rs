@@ -339,7 +339,9 @@ mod test {
     #[test]
     fn check_array_ref_5() {
         fn f(data: Vec<u8>, offset: usize) -> quickcheck::TestResult {
-            if data.len() < offset + 5 {
+            // Compute the following, with correct results even if the sum would overflow:
+            //   if data.len() < offset + 5
+            if data.len() < 5 || data.len() - 5 < offset {
                 return quickcheck::TestResult::discard();
             }
             let out = array_ref!(data, offset, 5);
@@ -351,7 +353,9 @@ mod test {
     #[test]
     fn check_array_ref_out_of_bounds_5() {
         fn f(data: Vec<u8>, offset: usize) -> quickcheck::TestResult {
-            if data.len() >= offset + 5 {
+            // Compute the following, with correct results even if the sum would overflow:
+            //   if data.len() >= offset + 5
+            if data.len() >= 5 && data.len() - 5 >= offset {
                 return quickcheck::TestResult::discard();
             }
             quickcheck::TestResult::must_fail(move || {
@@ -364,7 +368,9 @@ mod test {
     #[test]
     fn check_array_mut_ref_7() {
         fn f(mut data: Vec<u8>, offset: usize) -> quickcheck::TestResult {
-            if data.len() < offset + 7 {
+            // Compute the following, with correct results even if the sum would overflow:
+            //   if data.len() < offset + 7
+            if data.len() < 7 || data.len() - 7 < offset {
                 return quickcheck::TestResult::discard();
             }
             let out = array_mut_ref!(data, offset, 7);
@@ -377,7 +383,9 @@ mod test {
     #[test]
     fn check_array_mut_ref_out_of_bounds_32() {
         fn f(mut data: Vec<u8>, offset: usize) -> quickcheck::TestResult {
-            if data.len() >= offset + 32 {
+            // Compute the following, with correct results even if the sum would overflow:
+            //   if data.len() >= offset + 32
+            if data.len() >= 32 && data.len() - 32 >= offset {
                 return quickcheck::TestResult::discard();
             }
             quickcheck::TestResult::must_fail(move || {
