@@ -32,6 +32,10 @@
 #[macro_use]
 extern crate std;
 
+#[macro_use]
+mod reserve;
+pub use reserve::*;
+
 /// You can use `array_ref` to generate an array reference to a subset
 /// of a sliceable bit of data (which could be an array, or a slice,
 /// or a Vec).
